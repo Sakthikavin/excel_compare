@@ -1,0 +1,32 @@
+[
+  {
+    "sheet_name": "Evaluation Summary",
+    "columns": "model_name,Total Tests Ran,Total Tests Passed,Total Tests Failed,Test Fail Percentage",
+    "key_cols": "model_name"
+  },
+  {
+    "sheet_name": "Failure by Test Category",
+    "columns": "Table Name,Test Category,Failure Count",
+    "key_cols": "model_name"
+  },
+  {
+    "sheet_name": "Failed Test Details",
+    "columns": "Eval RunId,Test Name,Test Category,Table Name,Column Name,Test Scope,Segmentation Column,Segmentation Value,Failure Severity,Failure Reason,Failure Time Interval,Is Core,Is Net New,Is_success,partition_column,partition_value",
+    "key_cols": "model_name"
+  },
+  {
+    "sheet_name": "Net New Test Details",
+    "columns": "Eval RunId,Test Name,Test Category,Table Name,Column Name,Test Scope,Segmentation Column,Segmentation Value,Failure Severity,Failure Reason,Failure Time Interval,Is Core,Is_success,partition_column,partition_value",
+    "key_cols": "model_name"
+  },
+  {
+    "sheet_name": "DVP Execution Failure",
+    "columns": "Evaluation_Run_Id,Model_Name,Test_Name,Test_Catagory,Test_Scope,Column_Name,Error_reason",
+    "key_cols": "model_name"
+  },
+  {
+    "sheet_name": "Count Increment Summary",
+    "columns": "model_name,groupid,client_ds_id,datasrc,current_count,prev_count,Increase_count,Increase_percentaget",
+    "key_cols": "model_name"
+  }
+]
