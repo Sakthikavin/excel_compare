@@ -1,9 +1,11 @@
 import pandas as pd
 import numpy as np
 import json
+import argparse
 
 # Define the diff function to show the changes in each field
 def report_diff(x):
+    # Avoid nan values during comparison
     if pd.isna(x[0]) and pd.isna(x[1]) :
         return ''
     else:
@@ -16,10 +18,19 @@ def get_combined_index(df, key_col_list):
     return df
 
 
-# Creating an Excel Writer
-writer = pd.ExcelWriter('test_comparison.xlsx')
 
-config_file  = open("excel_config.json","r")
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--config', help='is mandatory')
+parser.add_argument('--old_file', help='is mandatory')
+parser.add_argument('--new_file', help='is mandatory')
+args = parser.parse_args()
+
+
+# Creating an Excel Writer
+writer = pd.ExcelWriter('final_comparison.xlsx')
+
+config_file  = open(args.config,"r")
 
 file_content = config_file.read()
 json_content = json.loads(file_content)
@@ -38,9 +49,10 @@ for sheet in json_content:
     key_columns = [x.encode('ascii') for x in key_columns]
 
     # Read in the two files but call the data old and new and create columns to track
-    old = pd.read_excel('A1.xlsx', sheet_name, na_values=['NA']).replace(r'^\s*$', np.nan, regex=True)
-    new = pd.read_excel('B1.xlsx', sheet_name, na_values=['NA']).replace(r'^\s*$', np.nan, regex=True)
-    # Remove the space in column names and replace missing data with nan
+    # Replace missing data with nan
+    old = pd.read_excel(args.old_file, sheet_name, na_values=['NA']).replace(r'^\s*$', np.nan, regex=True)
+    new = pd.read_excel(args.new_file, sheet_name, na_values=['NA']).replace(r'^\s*$', np.nan, regex=True)
+    # Remove the space in column names 
     old.columns = old.columns.str.replace(' ', '_')
     new.columns = new.columns.str.replace(' ', '_')
     old['status'] = 'old'
