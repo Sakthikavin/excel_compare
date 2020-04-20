@@ -18,8 +18,6 @@ def get_combined_index(df, key_col_list):
     return df
 
 
-
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', help='is mandatory')
 parser.add_argument('--old_file', help='is mandatory')
@@ -63,41 +61,41 @@ for sheet in json_content:
     old = get_combined_index(old, key_columns)
     new = get_combined_index(new, key_columns)
 
-    #Join all the data together and ignore indexes so it all gets added
+    # Join all the data together and ignore indexes so it all gets added
     full_set = pd.concat([old,new],ignore_index=True)
 
-    # Let's see what changes in the main columns we care about
+    # Drop duplicates from the full data
     changes = full_set.drop_duplicates(subset=columns,keep='last')
 
-    #We want to know where the duplicate row numbers are, that means there have been changes
+    # Get the indexes for the changed items
     dupe_accts = changes.set_index('combined_index').index.get_duplicates()
 
-    #Get all the duplicate rows
+    # Get all the duplicate rows
     dupes = changes[changes["combined_index"].isin(dupe_accts)]
 
-    #Pull out the old and new data into separate dataframes
+    # Pull out the old and new data into separate dataframes
     change_new = dupes[(dupes['status'] == 'new')]
     change_old = dupes[(dupes['status'] == 'old')]
 
-    #Drop the temp columns - we don't need them now
+    # Drop the temp columns
     change_new = change_new.drop(['status'], axis=1)
     change_old = change_old.drop(['status'], axis=1)
 
-    #Index on the unique set of columns
+    # Index on the unique column
     change_new.set_index('combined_index',inplace=True)
     change_old.set_index('combined_index',inplace=True)
 
-    #Now we can diff because we have two data sets of the same size with the same index
+    # Now we can diff because we have two data sets of the same size with the same index
     diff_panel = pd.Panel(dict(df1=change_old,df2=change_new))
     modified_rows = diff_panel.apply(report_diff, axis=0)
     modified_rows['status'] = 'modified' 
 
-    #Diff'ing is done, we need to get a list of removed items
+    # Diff'ing is done, we need to get a list of removed items
 
-    #Flag all duplicated row numbers
+    # Flag all duplicated row numbers
     changes['duplicate']=changes["combined_index"].isin(dupe_accts)
 
-    #Identify non-duplicated items that are in the old status and did not show in the new status
+    # Identify non-duplicated items that are in the old status and did not show in the new status
     removed_rows = changes[(changes['duplicate'] == False) & (changes['status'] == 'old')]
     removed_rows = removed_rows.drop(['duplicate'], axis=1)
     removed_rows['status'] = 'removed'
